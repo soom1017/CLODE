@@ -34,7 +34,7 @@ model.eval()
 model.to(device)
 model.load_state_dict(torch.load(CLODE_model_path / 'lowlight.pth', weights_only=True), strict=False)
 
-regressor = models[args.model]().to(device)
+regressor = models[args.model](hidden_dim=args.hidden_dim).to(device)
 regressor.load_state_dict(torch.load(model_file, weights_only=True, map_location=device))
 regressor.eval()
 
