@@ -1,7 +1,17 @@
+import os
+from tqdm import tqdm
+from pathlib import Path
+import wandb
+import yaml
+import argparse
+
 import torch
 import torch.optim as optim
 import numpy as np
 import random
+import sys
+
+sys.path.append(str(Path(__file__).parent.parent))
 
 random_seed = 42
 torch.manual_seed(random_seed)
@@ -10,15 +20,9 @@ torch.cuda.manual_seed_all(random_seed)  # if use multi-GPU
 np.random.seed(random_seed)
 random.seed(random_seed)
 
-from data.clip_dataset import get_dataloader
+from data import *
 from model import *
 
-import os
-from tqdm import tqdm
-from pathlib import Path
-import wandb
-import yaml
-import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--run', type=str, required=True, help='run name in wandb')
@@ -34,6 +38,19 @@ device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 models = {
     'v1': Regressor_v1,
     'v2': Regressor_v2,
+    'v3': Regressor_v3,
+    'v4': Regressor_v4,
+    'v5': Regressor_v5,
+    'v6': Regressor_v6,
+}
+
+data_fn = {
+    'v1': get_dataloader_v1,
+    'v2': get_dataloader_v1,
+    'v3': get_dataloader_v1,
+    'v4': get_dataloader_v2,
+    'v5': get_dataloader_v2,
+    'v6': get_dataloader_v2,
 }
 
 num_epochs = 500
@@ -43,7 +60,7 @@ val_losses = []
 best_val_loss = float(1e5)
 best_epoch = 0
 
-train_loader, val_loader = get_dataloader(args.data, batch_size=batch_size, val_size=0.2, device=device)
+train_loader, val_loader = data_fn[args.model](args.data, batch_size=batch_size, val_size=0.2, device=device)
 regressor = models[args.model](hidden_dim=args.hidden_dim).to(device)
 criterion = torch.nn.HuberLoss(delta=1.0)
 

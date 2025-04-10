@@ -25,7 +25,7 @@ class EvalDataset(Dataset):
         self.device = device
         
         # Load CLIP IQA model
-        self.prompts = ('brightness', 'noisiness', 'quality')
+        self.prompts = ('brightness', 'noisiness', 'quality', 'colorfullness', 'contrast', 'complexity', 'warm')
         self.clip_metric = CLIPImageQualityAssessment(
             model_name_or_path="openai/clip-vit-large-patch14",
             prompts=self.prompts

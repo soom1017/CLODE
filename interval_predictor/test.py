@@ -7,10 +7,9 @@ sys.path.append(str(Path(__file__).parent.parent))
 
 import numpy as np
 import torch
+from data import *
 from model import *
 from network.conv_node import NODE
-from data.clip_dataset import TrainDataset
-from data.eval_dataset import EvalDataset
 from utils import plot_regression_results
 from misc import calculate_psnr, calculate_ssim
 
@@ -21,6 +20,19 @@ args.merge_with_cli()
 models = {
     'v1': Regressor_v1,
     'v2': Regressor_v2,
+    'v3': Regressor_v3,
+    'v4': Regressor_v4,
+    'v5': Regressor_v5,
+    'v6': Regressor_v6,
+}
+
+datasets = {
+    'v1': [TrainDataset_v1, EvalDataset_v1],
+    'v2': [TrainDataset_v1, EvalDataset_v1],
+    'v3': [TrainDataset_v1, EvalDataset_v1],
+    'v4': [TrainDataset_v2, EvalDataset_v2],
+    'v5': [TrainDataset_v2, EvalDataset_v2],
+    'v6': [TrainDataset_v2, EvalDataset_v2],
 }
 
 CLODE_model_path = Path(__file__).parent / '..' / 'pth'
@@ -41,8 +53,8 @@ regressor.eval()
 
 # Plot regression performance on [train, val] dataset
 train_data = 'LOL' if args.data in ['LOL', 'LSRW'] else 'SICE'
-train_set = TrainDataset(train_data, split='train', val_size=0.2, device=device)
-val_set = TrainDataset(train_data, split='val', val_size=0.2, device=device)
+train_set = datasets[args.model][0](train_data, split='train', val_size=0.2, device=device)
+val_set = datasets[args.model][0](train_data, split='val', val_size=0.2, device=device)
 
 with torch.no_grad():
     y_pred = regressor(train_set.X).cpu().numpy()
@@ -66,7 +78,7 @@ with torch.no_grad():
     )
     
 # Caculate PSNR for test dataset
-test_dataset = EvalDataset(args.data, device)
+test_dataset = datasets[args.model][1](args.data, device)
 psnrs = []
 ssims = []
 
