@@ -2,6 +2,7 @@ from omegaconf import OmegaConf
 from pathlib import Path
 from tqdm import tqdm
 import sys
+import os
 
 sys.path.append(str(Path(__file__).parent.parent))
 
@@ -24,6 +25,7 @@ models = {
     'v4': Regressor_v4,
     'v5': Regressor_v5,
     'v6': Regressor_v6,
+    'v7': Regressor_v7,
 }
 
 datasets = {
@@ -33,12 +35,14 @@ datasets = {
     'v4': [TrainDataset_v2, EvalDataset_v2],
     'v5': [TrainDataset_v2, EvalDataset_v2],
     'v6': [TrainDataset_v2, EvalDataset_v2],
+    'v7': [TrainDataset_v3, EvalDataset_v3],
 }
 
 CLODE_model_path = Path(__file__).parent / '..' / 'pth'
 model_path = Path(__file__).parent / 'model' / RUN_NAME
 model_file = next(model_path.glob('*.pth'))
 
+os.environ["CUDA_VISIBLE_DEVICES"] = str(args.cuda)
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 model = NODE(device, (3, 400, 600), 32, augment_dim=0, time_dependent=True, adjoint=True)

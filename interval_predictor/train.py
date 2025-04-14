@@ -42,6 +42,7 @@ models = {
     'v4': Regressor_v4,
     'v5': Regressor_v5,
     'v6': Regressor_v6,
+    'v7': Regressor_v7,
 }
 
 data_fn = {
@@ -51,6 +52,7 @@ data_fn = {
     'v4': get_dataloader_v2,
     'v5': get_dataloader_v2,
     'v6': get_dataloader_v2,
+    'v7': get_dataloader_v3,
 }
 
 num_epochs = 500
@@ -76,7 +78,8 @@ config = {
     'epochs': num_epochs,
     'batch_size': batch_size,
     'optimizer': 'AdamW',
-    'loss_function': 'HuberLoss'
+    'loss_function': 'HuberLoss',
+    'cuda': args.cuda,
 }
 wandb.init(project="interval_predictor", name=args.run, config=config)
 
