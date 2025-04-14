@@ -7,7 +7,7 @@ def plot_regression_results(y_true, y_pred, title, save_path=None):
     rmse = np.sqrt(np.mean((y_pred - y_true) ** 2))
     r2 = r2_score(y_true, y_pred)
     
-    print(f'{title} \n\t- MAE: {mae:.4f}, RMSE: {rmse:.4f}')
+    print(f'{title} \n\t- MAE: {mae:.4f}, RMSE: {rmse:.4f}, R²: {r2:.4f}')
 
     if save_path:
         plt.figure(figsize=(8, 8))
