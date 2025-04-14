@@ -9,7 +9,8 @@ from PIL import Image
 
 datasets = {
     'LOL': '/home/soom/data/LOL/eval15',
-    'LSRW': '/home/soom/data/LSRW/Eval'
+    'LSRW': '/home/soom/data/LSRW/Eval',
+    'SICE': '/home/soom/data/SICE/eval',
 }
 
 CLIP_PROMPTS = [

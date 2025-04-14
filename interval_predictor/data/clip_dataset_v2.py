@@ -5,12 +5,12 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 from transformers import AutoTokenizer, CLIPModel
 from sklearn.model_selection import train_test_split
-from misc import image_tensor
 import torchvision.transforms as transforms
 from PIL import Image
 
 datasets = {
     'LOL': '/home/soom/data/LOL/our485',
+    'SICE': '/home/soom/data/SICE/train',
 }
 
 CLIP_PROMPTS = [
@@ -36,7 +36,7 @@ class TrainDataset(Dataset):
         
         X = self._process_clip_and_generate_input(input_feature_path)
             
-        y = np.load(self.npy_path / f'train_best_t_v2.npy')[:, 0]
+        y = np.load(self.npy_path / f'train_best_t_v1.npy')[:, 0]
         y = torch.tensor(y, dtype=torch.float32).to(device)
         
         X_train, X_test, y_train, y_test = train_test_split(
