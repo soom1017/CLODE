@@ -124,9 +124,9 @@ for epoch in tqdm(range(num_epochs)):
     
     # Save (best epoch)
     if avg_val_loss < best_val_loss:
-            best_val_loss = val_loss
-            best_model = regressor.state_dict()
-            best_epoch = epoch
+        best_val_loss = avg_val_loss
+        best_model = regressor.state_dict()
+        best_epoch = epoch
 
 model_path = Path(__file__).parent / 'model' / args.run
 model_path.mkdir(exist_ok=True, parents=True)
