@@ -44,6 +44,7 @@ models = {
     'v6': Regressor_v6,
     'v7': Regressor_v7,
     'v8': Regressor_v8,
+    'v9': Regressor_v9,
 }
 
 data_fn = {
@@ -55,10 +56,11 @@ data_fn = {
     'v6': get_dataloader_v2,
     'v7': get_dataloader_v3,
     'v8': get_dataloader_v3,
+    'v9': get_dataloader_v2,
 }
 
 num_epochs = 500
-batch_size = 16
+batch_size = 64
 train_losses = []
 val_losses = []
 best_val_loss = float(1e5)
@@ -108,7 +110,10 @@ for epoch in tqdm(range(num_epochs)):
             y_pred = regressor(X_batch)
             val_loss += criterion(y_pred, y_batch).item()
             
-    val_losses.append(val_loss / len(val_loader))
+    avg_val_loss = val_loss / len(val_loader)
+    val_losses.append(avg_val_loss)
+    
+    scheduler.step(avg_val_loss)
     
     # Log metrics to wandb
     wandb.log({
@@ -118,7 +123,7 @@ for epoch in tqdm(range(num_epochs)):
     })
     
     # Save (best epoch)
-    if val_loss < best_val_loss:
+    if avg_val_loss < best_val_loss:
             best_val_loss = val_loss
             best_model = regressor.state_dict()
             best_epoch = epoch

@@ -6,20 +6,15 @@ from torch.utils.data import Dataset, DataLoader
 from transformers import AutoTokenizer, CLIPModel
 from sklearn.model_selection import train_test_split
 from misc import image_tensor
+import torchvision.transforms as transforms
+from PIL import Image
 
 datasets = {
     'LOL': '/home/soom/data/LOL/our485',
 }
 
 CLIP_PROMPTS = [
-    # brightness, noisiness, quality, colorfullness, contrast, complexity, warm
-    "bright photo", "dark photo", 
-    "good photo", "bad photo",
-    "clean photo", "noisy photo", 
-    "colorful photo", "dull photo",
-    "high contrast photo", "low contrast photo",
-    "complex photo", "simple photo",
-    "warm photo", "cold photo",
+    "brightness", "natural", "colorfullness",
 ]
 
 class TrainDataset(Dataset):
@@ -38,11 +33,8 @@ class TrainDataset(Dataset):
         
         # Load input
         input_feature_path = self.npy_path / 'train_clip_features_v2.npy'
-        if not input_feature_path.exists():
-            X = self._process_clip_and_generate_input(input_feature_path)
-        else:
-            X = np.load(input_feature_path)
-            X = torch.tensor(X, dtype=torch.float32).to(device)
+        
+        X = self._process_clip_and_generate_input(input_feature_path)
             
         y = np.load(self.npy_path / f'train_best_t_v2.npy')[:, 0]
         y = torch.tensor(y, dtype=torch.float32).to(device)
@@ -58,25 +50,33 @@ class TrainDataset(Dataset):
             self.len = len(y_test)
         
     def _process_clip_and_generate_input(self, save_path):
-        model = CLIPModel.from_pretrained("openai/clip-vit-large-patch14").to(self.device)
-        tokenizer = AutoTokenizer.from_pretrained("openai/clip-vit-large-patch14")
+        model = CLIPModel.from_pretrained("openai/clip-vit-base-patch16").to(self.device)
+        tokenizer = AutoTokenizer.from_pretrained("openai/clip-vit-base-patch16")
+        
+        transform = transforms.Compose([
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.48145466, 0.4578275, 0.40821073],
+                                std=[0.26862954, 0.26130258, 0.27577711])
+        ])
         
         with torch.no_grad():
             model.eval()
             
-            # [14, 768]
+            # [3, 512]
             text_tokens = tokenizer(CLIP_PROMPTS, padding=True, return_tensors="pt")
             text_features = model.get_text_features(**text_tokens.to(self.device))
             
-            # [num_images, 768]
+            # [num_images, 512]
             image_features = []
             for label in self.image_labels:            
-                lq_224 = image_tensor(self.data_path / 'low' / label, size=(224, 224))
+                image = Image.open(self.data_path / 'low' / label).convert('RGB')
+                lq_224 = transform(image).unsqueeze(0).to(self.device)
                 image_feat = model.get_image_features(lq_224)
                 image_features.append(image_feat.squeeze(0))    
             image_features = torch.stack(image_features).to(self.device)
             
-            # [num_images, 14, 768] + [num_images, 1, 768] = [num_images, 15, 768]
+            # [num_images, 3, 512] + [num_images, 1, 512] = [num_images, 4, 512]
             text_features = text_features.unsqueeze(0).repeat(image_features.shape[0], 1, 1)
             image_features = image_features.unsqueeze(1)
             

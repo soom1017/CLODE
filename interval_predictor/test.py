@@ -27,6 +27,7 @@ models = {
     'v6': Regressor_v6,
     'v7': Regressor_v7,
     'v8': Regressor_v8,
+    'v9': Regressor_v9,
 }
 
 datasets = {
@@ -38,6 +39,7 @@ datasets = {
     'v6': [TrainDataset_v2, EvalDataset_v2],
     'v7': [TrainDataset_v3, EvalDataset_v3],
     'v8': [TrainDataset_v3, EvalDataset_v3],
+    'v9': [TrainDataset_v2, EvalDataset_v2],
 }
 
 CLODE_model_path = Path(__file__).parent / '..' / 'pth'
