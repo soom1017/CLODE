@@ -45,6 +45,7 @@ datasets = {
 }
 
 CLODE_model_path = Path(__file__).parent / '..' / 'pth'
+CLODE_model_file = 'sice.pth' if args.data == 'SICE' else 'lowlight.pth'
 model_path = Path(__file__).parent / 'model' / RUN_NAME
 model_file = next(model_path.glob('*.pth'))
 
@@ -54,7 +55,7 @@ device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 model = NODE(device, (3, 400, 600), 32, augment_dim=0, time_dependent=True, adjoint=True)
 model.eval()
 model.to(device)
-model.load_state_dict(torch.load(CLODE_model_path / 'lowlight.pth', weights_only=True), strict=False)
+model.load_state_dict(torch.load(CLODE_model_path / CLODE_model_file, weights_only=True), strict=False)
 
 regressor = models[args.model](hidden_dim=args.hidden_dim).to(device)
 regressor.load_state_dict(torch.load(model_file, weights_only=True, map_location=device))
