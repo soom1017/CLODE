@@ -16,6 +16,8 @@ from .regressor_v7 import Regressor as Regressor_v7
 from .regressor_v8 import Regressor as Regressor_v8
 # Cross attention (prompt feature + image feature) + MLP (LBW)
 from .regressor_v9 import Regressor as Regressor_v9
+# Cross attention (prompt feature + image feature) + Dual MLP
+from .regressor_v10 import Regressor as Regressor_v10
 __all__ = [
     "Regressor_v1", 
     "Regressor_v2", 
@@ -26,4 +28,5 @@ __all__ = [
     "Regressor_v7", 
     "Regressor_v8",
     "Regressor_v9",
+    "Regressor_v10",
 ]

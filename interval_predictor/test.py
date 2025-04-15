@@ -28,6 +28,7 @@ models = {
     'v7': Regressor_v7,
     'v8': Regressor_v8,
     'v9': Regressor_v9,
+    'v10': Regressor_v10,
 }
 
 datasets = {
@@ -40,6 +41,7 @@ datasets = {
     'v7': [TrainDataset_v3, EvalDataset_v3],
     'v8': [TrainDataset_v3, EvalDataset_v3],
     'v9': [TrainDataset_v2, EvalDataset_v2],
+    'v10': [TrainDataset_v2, EvalDataset_v2],
 }
 
 CLODE_model_path = Path(__file__).parent / '..' / 'pth'
@@ -52,7 +54,7 @@ device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 model = NODE(device, (3, 400, 600), 32, augment_dim=0, time_dependent=True, adjoint=True)
 model.eval()
 model.to(device)
-model.load_state_dict(torch.load(CLODE_model_path / 'sice.pth', weights_only=True), strict=False)
+model.load_state_dict(torch.load(CLODE_model_path / 'lowlight.pth', weights_only=True), strict=False)
 
 regressor = models[args.model](hidden_dim=args.hidden_dim).to(device)
 regressor.load_state_dict(torch.load(model_file, weights_only=True, map_location=device))

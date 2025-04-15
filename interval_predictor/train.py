@@ -45,6 +45,7 @@ models = {
     'v7': Regressor_v7,
     'v8': Regressor_v8,
     'v9': Regressor_v9,
+    'v10': Regressor_v10,
 }
 
 data_fn = {
@@ -57,6 +58,7 @@ data_fn = {
     'v7': get_dataloader_v3,
     'v8': get_dataloader_v3,
     'v9': get_dataloader_v2,
+    'v10': get_dataloader_v2,
 }
 
 num_epochs = 500

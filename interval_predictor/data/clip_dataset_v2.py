@@ -14,7 +14,9 @@ datasets = {
 }
 
 CLIP_PROMPTS = [
-    "brightness", "natural", "colorfullness",
+    "brightness", "noisiness", "quality", "colorfullness",
+    "contrast", "complex", "warm", "sharp",
+    "natural",
 ]
 
 class TrainDataset(Dataset):
@@ -36,7 +38,7 @@ class TrainDataset(Dataset):
         
         X = self._process_clip_and_generate_input(input_feature_path)
             
-        y = np.load(self.npy_path / f'train_best_t_v1.npy')[:, 0]
+        y = np.load(self.npy_path / f'train_best_t_v2.npy')[:, 0]
         y = torch.tensor(y, dtype=torch.float32).to(device)
         
         X_train, X_test, y_train, y_test = train_test_split(
@@ -63,7 +65,7 @@ class TrainDataset(Dataset):
         with torch.no_grad():
             model.eval()
             
-            # [3, 512]
+            # [9, 512]
             text_tokens = tokenizer(CLIP_PROMPTS, padding=True, return_tensors="pt")
             text_features = model.get_text_features(**text_tokens.to(self.device))
             
@@ -76,7 +78,7 @@ class TrainDataset(Dataset):
                 image_features.append(image_feat.squeeze(0))    
             image_features = torch.stack(image_features).to(self.device)
             
-            # [num_images, 3, 512] + [num_images, 1, 512] = [num_images, 4, 512]
+            # [num_images, 9, 512] + [num_images, 1, 512] = [num_images, 10, 512]
             text_features = text_features.unsqueeze(0).repeat(image_features.shape[0], 1, 1)
             image_features = image_features.unsqueeze(1)
             

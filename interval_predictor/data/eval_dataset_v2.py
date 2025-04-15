@@ -14,7 +14,9 @@ datasets = {
 }
 
 CLIP_PROMPTS = [
-    "brightness", "natural", "colorfullness",
+    "brightness", "noisiness", "quality", "colorfullness",
+    "contrast", "complex", "warm", "sharp",
+    "natural",
 ]
 
 class EvalDataset(Dataset):
@@ -43,16 +45,16 @@ class EvalDataset(Dataset):
 
     def _process_clip_and_generate_input(self, idx):
         with torch.no_grad():
-            # [14, 768]
+            # [9, 512]
             text_tokens = self.tokenizer(CLIP_PROMPTS, padding=True, return_tensors="pt")
             text_features = self.model.get_text_features(**text_tokens.to(self.device))
             
-            # [1, 768]
+            # [1, 512]
             image = Image.open(self.data_path / 'low' / self.image_labels[idx]).convert('RGB')
             lq_224 = self.transform(image).unsqueeze(0).to(self.device)
             image_feature = self.model.get_image_features(lq_224)
             
-            # [14, 768] + [1, 768] = [15, 768]
+            # [9, 512] + [1, 512] = [10, 512]
             x = torch.cat([text_features, image_feature], dim=0)
         
         return x.unsqueeze(0)
