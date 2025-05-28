@@ -4,6 +4,7 @@ import torch.nn.functional as F
 import losses as loss_func
 import matplotlib.pyplot as plt
 from network.torchdiffeq import odeint_adjoint
+import random as rdm
 
 MAX_NUM_STEPS = 1000 # 30 # 50 # 100
  
@@ -110,7 +111,8 @@ class EnhanceFunc(nn.Module):
         _x = x[:, :3 , :, :] 
         _, c, h, w = _x.shape
  
-        noise_map = self.loss_func(_x)
+        # noise_map = self.loss_func(_x)
+        noise_map = self.loss_func(self.add_noise(_x, rdm.randint(15, 60)))
         p_x = _x - self.denoise(_x)
         _in = torch.cat([p_x, 1-p_x], 1)
     

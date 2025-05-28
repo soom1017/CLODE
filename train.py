@@ -2,6 +2,7 @@ import torch
 from torch.utils.data import DataLoader
 import torch.backends.cudnn as cudnn
 
+import random as rdm
 import os
 import sys
 from tqdm import tqdm
@@ -14,6 +15,7 @@ from fsp.data import LOLDataset
 from network.conv_node import NODE
 
 def seed_torch(seed):
+    rdm.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
