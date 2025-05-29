@@ -51,9 +51,9 @@ for i in tqdm(range(num_images)):
         
     total_psnr += calculate_psnr(pred[0], gt_img[0])
     total_ssim += calculate_ssim(pred[0], gt_img[0])
-    total_niqe += niqe_metric(pred).item(),
-    total_brisque += brisque_metric(pred).item(),
-    total_pi += pi_metric(pred).item(),
+    total_niqe += niqe_metric(pred).item()
+    total_brisque += brisque_metric(pred).item()
+    total_pi += pi_metric(pred).item()
     total_entropy += entropy_metric(pred).item()
 
 print("PSNR:", total_psnr / num_images)
