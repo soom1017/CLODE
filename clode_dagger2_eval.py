@@ -1,10 +1,12 @@
 import numpy as np
 from tqdm import tqdm
-from network.conv_node import NODE
-from misc import *
 import os
 from pathlib import Path
+import pyiqa
+
 from clode_dagger_eval import load_image
+from network.conv_node import NODE
+from misc import *
 
 os.environ["CUDA_VISIBLE_DEVICES"] = '4'
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -27,8 +29,18 @@ IMAGE_PATH = Path('/home/soom/data/LSRW/eval')
 filenames = sorted(os.listdir(IMAGE_PATH / 'low'))
 num_images = len(filenames)
 
+# Non-reference metrics
+niqe_metric = pyiqa.create_metric('niqe', device=device)
+brisque_metric = pyiqa.create_metric('brisque', device=device)
+pi_metric = pyiqa.create_metric('pi', device=device)
+entropy_metric = pyiqa.create_metric('entropy', device=device)
+
 total_psnr = 0
 total_ssim = 0
+total_niqe = 0
+total_brisque = 0
+total_pi = 0
+total_entropy = 0
 
 for i in tqdm(range(num_images)):
     lq_img = load_image(IMAGE_PATH / 'low' / filenames[i])
@@ -39,6 +51,14 @@ for i in tqdm(range(num_images)):
         
     total_psnr += calculate_psnr(pred[0], gt_img[0])
     total_ssim += calculate_ssim(pred[0], gt_img[0])
+    total_niqe += niqe_metric(pred).item(),
+    total_brisque += brisque_metric(pred).item(),
+    total_pi += pi_metric(pred).item(),
+    total_entropy += entropy_metric(pred).item()
 
 print("PSNR:", total_psnr / num_images)
 print("SSIM:", total_ssim / num_images)
+print("NIQE:", total_niqe / num_images)
+print("BRISQUE:", total_brisque / num_images)
+print("PI:", total_pi / num_images)
+print("Entropy:", total_entropy / num_images)
