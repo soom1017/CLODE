@@ -9,7 +9,7 @@ from omegaconf import OmegaConf
 
 from losses import *
 from misc import *
-from fsp.trainer_random_fs import Trainer
+from fsp.trainer import Trainer
 from fsp.data import LOLDataset
 from network.conv_node import NODE
 
@@ -22,7 +22,7 @@ def seed_torch(seed):
 seed_torch(42)
 cudnn.benchmark = True
 
-os.environ["CUDA_VISIBLE_DEVICES"] = '4'
+os.environ["CUDA_VISIBLE_DEVICES"] = '5'
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 # Load configuration

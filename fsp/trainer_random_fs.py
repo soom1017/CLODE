@@ -28,8 +28,6 @@ class Trainer():
         self.optimizer = optimizer
         self.device = device
 
-        self.steps = 0
-
         # Loss functions
         self.L_tv = L_TV().to(device)
         self.L_color = L_color().to(device)
@@ -85,12 +83,12 @@ class Trainer():
     def _train_epoch(self, data_loader):
         epoch_losses = np.zeros(5)  # spa, exp, col, param, noise
         self.model.train()
-
-        t_end = np.random.uniform(2, 5)
-        eval_time = torch.tensor([0, t_end]).float().to(self.device)
         
         for x_batch, _ in tqdm(data_loader):
-            x_batch = x_batch.to(self.device)    
+            x_batch = x_batch.to(self.device)
+
+            t_end = np.random.normal(loc=3.0, scale=1.0)
+            eval_time = torch.tensor([0, t_end]).float().to(self.device)    
        
             pred = self.model(x_batch, eval_time)
             pred_img = pred['output']
@@ -118,7 +116,6 @@ class Trainer():
             "train/loss_param": epoch_losses[3],
             "train/loss_noise": epoch_losses[4],
             "train/total_loss": np.sum(epoch_losses),
-            "train/final_state": t_end,
         })
                 
         return np.sum(epoch_losses)

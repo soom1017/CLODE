@@ -186,3 +186,4 @@ interval_predictor/wandb/
 **/checkpoints/
 **/wandb/
 **/analysis/
+data/

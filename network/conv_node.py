@@ -110,7 +110,8 @@ class EnhanceFunc(nn.Module):
         _x = x[:, :3 , :, :] 
         _, c, h, w = _x.shape
  
-        noise_map = self.loss_func(_x)
+        # noise_map = self.loss_func(_x)
+        noise_map = self.loss_func(self.add_noise(_x, 40))
         p_x = _x - self.denoise(_x)
         _in = torch.cat([p_x, 1-p_x], 1)
     

@@ -1,7 +1,4 @@
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torchvision.transforms as transforms
 import numpy as np
 
 from tqdm import tqdm
@@ -24,9 +21,6 @@ class Trainer():
         self.model = model
         self.optimizer = optimizer
         self.device = device
-
-        self.steps = 0
-        self.eval_time = torch.tensor([0, config.eval_time]).float().to(self.device)
 
         # Loss functions
         self.L_tv = L_TV().to(device)
@@ -58,11 +52,13 @@ class Trainer():
         _psnr, _ssim = 0, 0
         self.model.eval()
 
+        eval_time = torch.tensor([0, 3]).float().to(self.device)
+        
         for filename in filenames:
             with torch.no_grad():
                 lq = image_tensor(IMAGE_PATH / 'low' / filename).unsqueeze(0).to(self.device)
                 gt = image_tensor(IMAGE_PATH / 'high' / filename).unsqueeze(0).to(self.device)
-                pred = self.model(lq, self.eval_time, inference=True)['output']
+                pred = self.model(lq, eval_time, inference=True)['output']
                 
                 _psnr += calculate_psnr(pred, gt)
                 _ssim += calculate_ssim(pred, gt)
@@ -83,8 +79,10 @@ class Trainer():
 
         for x_batch, _ in tqdm(data_loader):
             x_batch = x_batch.to(self.device)
+
+            eval_time = torch.tensor([0, 3]).float().to(self.device)
        
-            pred = self.model(x_batch, self.eval_time)
+            pred = self.model(x_batch, eval_time)
             pred_img = pred['output']
             A_map = pred['curve_map']
             noise_map = pred['noise_map']
