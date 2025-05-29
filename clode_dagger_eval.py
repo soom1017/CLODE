@@ -10,9 +10,9 @@ from network.conv_node import NODE
 from misc import *
 from losses import *
 
-MODEL_NAME = "default"
+MODEL_NAME = "default_noise"
 
-os.environ["CUDA_VISIBLE_DEVICES"] = '4'
+os.environ["CUDA_VISIBLE_DEVICES"] = '5'
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         
 # CLODE model
@@ -20,8 +20,8 @@ model = NODE(device, (3, 128, 128), 32, augment_dim=0, time_dependent=True, adjo
 model.eval()
 model.to(device)
 
-model_path = "/home/soom/CLODE/pth/lowlight.pth"
-# model_path = Path(__file__).parent.parent / "fsp" / "checkpoints" / MODEL_NAME / "best_psnr.pth"
+# model_path = "/home/soom/CLODE/pth/lowlight.pth"
+model_path = Path(__file__).parent / "fsp" / "checkpoints" / MODEL_NAME / "best_psnr.pth"
 model.load_state_dict(torch.load(model_path, map_location=device, weights_only=True), strict=False)
 
 # - saving trajectory
@@ -47,7 +47,7 @@ def load_image(filepath):
     
     return img.to(device)
 
-IMAGE_PATH = Path("/home/soom/data/LSRW/eval")
+IMAGE_PATH = Path("/home/soom/data/LOL/eval15")
 
 filenames = sorted(os.listdir(IMAGE_PATH / 'low'))
 data = np.zeros((len(filenames), 1000, 4))
@@ -97,7 +97,7 @@ for i in tqdm(range(len(filenames))):
     data[i, :, 0] = x_dense
     data[i, :, 1:] = y_dense
 
-np.save(f'data/psnr_ssim_{MODEL_NAME}_lsrw_eval.npy', data)
+np.save(f'data/psnr_ssim_{MODEL_NAME}_lol_eval.npy', data)
 
 # psnr 기준으로 가장 높은 인덱스들
 max_psnr_indices = np.argmax(data[:, :, 2], axis=1)

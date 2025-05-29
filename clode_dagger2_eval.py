@@ -4,11 +4,10 @@ import os
 from pathlib import Path
 import pyiqa
 
-from clode_dagger_eval import load_image
 from network.conv_node import NODE
 from misc import *
 
-os.environ["CUDA_VISIBLE_DEVICES"] = '4'
+os.environ["CUDA_VISIBLE_DEVICES"] = '5'
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         
 # CLODE model
@@ -16,16 +15,26 @@ model = NODE(device, (3, 128, 128), 32, augment_dim=0, time_dependent=True, adjo
 model.eval()
 model.to(device)
 
-MODEL_NAME = "default"
-model_path = "/home/soom/CLODE/pth/lowlight.pth"
-# model_path = Path(__file__).parent.parent / "fsp" / "checkpoints" / MODEL_NAME / "best.pth"
+MODEL_NAME = "default_noise"
+# model_path = "/home/soom/CLODE/pth/lowlight.pth"
+model_path = Path(__file__).parent / "fsp" / "checkpoints" / MODEL_NAME / "best_psnr.pth"
 model.load_state_dict(torch.load(model_path, map_location=device, weights_only=True), strict=False)
 
-data = np.load(f'data/psnr_ssim_{MODEL_NAME}_lsrw_eval.npy', allow_pickle=True)
+data = np.load(f'data/psnr_ssim_{MODEL_NAME}_lol_eval.npy', allow_pickle=True)
 t_val = np.linspace(2, 5, 1000)
 max_psnr_indices = np.argmax(data[:, :, 2], axis=1)
 
-IMAGE_PATH = Path('/home/soom/data/LSRW/eval')
+# Image dataset
+def load_image(filepath):
+    img = cv2.imread(str(filepath))
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img = (np.asarray(img)/255.0)
+    img = torch.from_numpy(img).float()
+    img = img.permute(2, 0, 1).unsqueeze(0)
+    
+    return img.to(device)
+
+IMAGE_PATH = Path('/home/soom/data/LOL/eval15')
 filenames = sorted(os.listdir(IMAGE_PATH / 'low'))
 num_images = len(filenames)
 
