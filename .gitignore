@@ -183,7 +183,7 @@ eval_CLODE_pkl/
 
 interval_predictor/model/**/
 interval_predictor/wandb/
-**/checkpoints/
+**/checkpoints*/
 **/wandb/
 **/analysis/
 data/
